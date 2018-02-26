@@ -16,7 +16,7 @@ main.go - Main file
  */
 
 func main() {
-	fmt.Print(infixToPostfix("a.b.c"))
+	fmt.Print(infixToPostfix("a.b.c*"))
 }
 
 //converts an infix regular expression to a postfix one
@@ -33,21 +33,56 @@ func infixToPostfix(original string) string {
 	//convert string to runes
 	for _, r := range original {
 
+		//check for rune type
+		switch {
+
+		//add open bracket to stack
+		case r == '(':
+			stack = append(stack, r)
+
+			//add everything from the stack to postfix until you encounter an opening bracket
+		case r == ')':
+			var x rune
+			for stack[len(stack)-1] != '(' {
+				stack, x = pop(stack)
+				postFix = append(postFix, x)
+			}
+			//pop the remaining bracket
+			stack, _ = pop(stack)
+
+			//while something is on the stack and the precedence is less than the top element of the stack
+			//add it to postfix
+		case operators[r] > 0:
+			for len(stack) > 0 && operators[r] <= operators[stack[len(stack)-1]] {
+				var x rune
+				stack, x = pop(stack)
+				postFix = append(postFix, x)
+			}
+			stack = append(stack, r)
+
+		default:
+			//add word rune to the postfix slice
+			postFix = append(postFix, r)
+		}
 	}
 
-	//concatenate two character runes followed by an operator rune
-
+	//add anything left on the stack to postfix
+	for len(stack) > 0 {
+		var x rune
+		stack, x = pop(stack)
+		postFix = append(postFix, x)
+	}
 
 	return string(postFix)
 }
 
-//returns the first element of a slice and removes it from the stack
-func pop(stack []rune) (rune, []rune) {
+//returns the top element of a slice and removes it from the stack
+func pop(stack []rune) ([]rune, rune) {
 	//get the top element
-	r := stack[0]
+	r := stack[len(stack)-1]
 
 	//remove it from the stack
-	stack = stack[1:]
+	stack = stack[:len(stack)-1]
 
-	return r, stack
+	return stack, r
 }
