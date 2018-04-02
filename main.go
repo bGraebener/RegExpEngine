@@ -11,15 +11,16 @@ main.go - Main file
 
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
-	fmt.Println(infixToPostfix("a.b|c*"))
+	//fmt.Println(infixToPostfix("a.b|c*"))
+	//
+	//nfa := regexToNfa(infixToPostfix("a.b|c*"))
+	//fmt.Println(nfa)
 
-	nfa := regexToNfa(infixToPostfix("a.b|c*"))
-	fmt.Println(nfa)
+	fmt.Println(matches("a.b|c*", "cccc"))
+
 }
 
 //converts an infix regular expression to a postfix one
@@ -105,15 +106,17 @@ func regexToNfa(postfix string) *nfa {
 		//concatenate two fragments
 		case '.':
 			//	pop two elements of the stack of regex fragments
-			twoFragments:= nfaStack[len(nfaStack)-2:]
+			twoFragments := nfaStack[len(nfaStack)-2:]
 			nfaStack = nfaStack[:len(nfaStack)-2]
 
 			//connect accept state of firstEdge fragment to initial state of secondEdge fragment
 			twoFragments[0].accept.firstEdge = twoFragments[1].initial
 
 			//create a new state with the initial state of the firstEdge fragment and the accept state of the secondEdge fragment
+			newNfa := &nfa{initial: twoFragments[0].initial, accept: twoFragments[1].accept}
+
 			//and push it back to the stack
-			nfaStack = append(nfaStack, &nfa{initial: twoFragments[0].initial, accept: twoFragments[1].accept})
+			nfaStack = append(nfaStack, newNfa)
 
 			//	accept either fragments
 		case '|':
@@ -170,14 +173,64 @@ func regexToNfa(postfix string) *nfa {
 	return nfaStack[0]
 }
 
-//checks whether a regular expression matches an input
+//checks whether an infix regular expression matches an input
 func matches(regex string, original string) bool {
 	matches := false
+
+	//convert infix regular expression to postfix expression
+	regex = infixToPostfix(regex)
 
 	// compile a regular expression to a NFA
 	regexNfa := regexToNfa(regex)
 
+	//keep track of all states that the algorithm is currently in
+	var current []*state
+	//keep track of all states that can be reached next
+	var next []*state
+
+	current = addState(current[:], regexNfa.initial, regexNfa.accept)
+
+	//loop the string
+	for _, r := range original {
+		//check all states currently in and what next possible states to reach
+		for _, c := range current {
+
+			// if the current states' symbol matches the current character in the input string put it into the list
+			// of next states
+			if c.symbol == r {
+				next = addState(next[:], c, regexNfa.accept)
+			}
+		}
+		//swap the current states against the old next states and clear the next state slice
+		current, next = next, []*state{}
+	}
+
+	//after the whole original string has been gone over, check if the nfa is in an accept state
+	for _, c := range current {
+		if c == regexNfa.accept {
+			matches = true
+			break
+		}
+	}
+
 	return matches
+}
+
+// helper function to add states to a list of states
+// also adds all states that can be reached from the newly added states
+func addState(states []*state, first *state, accept *state) []*state {
+	//add the immediate states
+	states = append(states, first, accept)
+
+	// 0 symbol means e-edges coming to the state
+	// all the states the e-edges point to have to be added as well
+	if first != accept && first.symbol == 0 {
+		states = addState(states, first.firstEdge, accept)
+		if first.secondEdge != nil {
+			states = addState(states, first.secondEdge, accept)
+		}
+	}
+	return states
 }
 
 //returns the top element of a slice and removes it from the stack
