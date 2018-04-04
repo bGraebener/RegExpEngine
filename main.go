@@ -33,7 +33,7 @@ func main() {
 	fmt.Scanln(&input)
 
 	//call matching function
-	if matches(regex, input){
+	if matches(regex, input) {
 		fmt.Println("\nYour regular expression matches the input string.")
 	} else {
 		fmt.Println("\nYour regular expression does not match the input string.")
@@ -50,7 +50,7 @@ func infixToPostfix(original string) string {
 	var postFix []rune
 
 	//map of special characters and their weight
-	operators := map[rune]int{'*': 10, '+':9, '?':8, '.': 7, '|': 6}
+	operators := map[rune]int{'*': 10, '+': 9, '?': 8, '.': 7, '|': 6}
 
 	//make a stack
 	var stack []rune
@@ -157,7 +157,6 @@ func regexToNfa(postfix string) *nfa {
 			//push the new fragment back onto the stack
 			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
 
-
 		//	accept zero or one of a character
 		case '?':
 			//pop an element of the stack of nfas
@@ -178,7 +177,6 @@ func regexToNfa(postfix string) *nfa {
 			//push the new fragment back onto the stack
 			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
 
-
 		//	accept one or more of a character
 		case '+':
 			//pop an element of the stack of nfas
@@ -187,14 +185,13 @@ func regexToNfa(postfix string) *nfa {
 
 			//create two states for new nfa
 			var accept state
-			initial := state {firstEdge:frag.initial, secondEdge: &accept}
+			initial := state{firstEdge: frag.initial, secondEdge: &accept}
 
 			//accept multiple characters
 			frag.accept.firstEdge = &initial
 
 			//push a new fragment containing the new states onto the stack
-			nfaStack = append(nfaStack, &nfa{initial:frag.initial, accept: &accept})
-
+			nfaStack = append(nfaStack, &nfa{initial: frag.initial, accept: &accept})
 
 			//	accept any number of on element
 		case '*':
@@ -205,7 +202,7 @@ func regexToNfa(postfix string) *nfa {
 			//create a new initial and accept state
 			var accept state
 			//let the new initial state point to the old initial and new accept state
-			initial :=  state{firstEdge:frag.initial, secondEdge:&accept}
+			initial := state{firstEdge: frag.initial, secondEdge: &accept}
 
 			//let the old accept state point to itself and to the new accept state
 			frag.accept.firstEdge = frag.initial
