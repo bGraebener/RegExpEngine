@@ -16,7 +16,7 @@ import "fmt"
 func main() {
 	//fmt.Println(infixToPostfix("a.b|c*"))
 
-	fmt.Println(matches("a?.b", "ab"))
+	fmt.Println(matches("a+.b+", "aabb"))
 
 }
 
@@ -29,7 +29,7 @@ func infixToPostfix(original string) string {
 	var postFix []rune
 
 	//map of special characters and their weight
-	operators := map[rune]int{'*': 10, '.': 9, '|': 8}
+	operators := map[rune]int{'*': 10, '+':9, '?':8, '.': 7, '|': 6}
 
 	//make a stack
 	var stack []rune
@@ -158,9 +158,22 @@ func regexToNfa(postfix string) *nfa {
 			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
 
 
-		//case '+':
-		//	frag := nfaStack[len(nfaStack)-1]
-		//	nfaStack = nfaStack[:len(nfaStack)-1]
+		//	accept one or more of a character
+		case '+':
+			//pop an element of the stack of nfas
+			frag := nfaStack[len(nfaStack)-1]
+			nfaStack = nfaStack[:len(nfaStack)-1]
+
+			//create two states for new nfa
+			var accept state
+			initial := state {firstEdge:frag.initial, secondEdge: &accept}
+
+			//accept multiple characters
+			frag.accept.firstEdge = &initial
+
+			//push a new fragment containing the new states onto the stack
+			nfaStack = append(nfaStack, &nfa{initial:frag.initial, accept: &accept})
+
 
 			//	accept any number of on element
 		case '*':
@@ -173,7 +186,7 @@ func regexToNfa(postfix string) *nfa {
 			//let the new initial state point to the old initial and new accept state
 			initial :=  state{firstEdge:frag.initial, secondEdge:&accept}
 
-			//let the old accept state point to the old initial state and the new accept state
+			//let the old accept state point to itself and to the new accept state
 			frag.accept.firstEdge = frag.initial
 			frag.accept.secondEdge = &accept
 
