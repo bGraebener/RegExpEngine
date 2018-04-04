@@ -14,9 +14,30 @@ package main
 import "fmt"
 
 func main() {
-	//fmt.Println(infixToPostfix("a.b|c*"))
 
-	fmt.Println(matches("a+.b+", "aabb"))
+	// show a command line interface
+
+	fmt.Println("**********Welcome to the Regular Expression Matcher***************")
+	fmt.Println("\tYou can enter a regular expression in \n\t\tin-fix notation (e.g a.b or a+.b+)")
+	fmt.Println("\t\tor post-fix notation (e.g. ab. or a+b+.)")
+	fmt.Println("\t\tsupported special characters are: *, ?, +, ., |")
+
+	//ask for regular expression
+	fmt.Print("\n\tPlease enter a regular expression: ")
+	var regex string
+	fmt.Scanln(&regex)
+
+	//ask for string to check
+	fmt.Print("\tPlease enter a string to test against the regular expression: ")
+	var input string
+	fmt.Scanln(&input)
+
+	//call matching function
+	if matches(regex, input){
+		fmt.Println("\nYour regular expression matches the input string.")
+	} else {
+		fmt.Println("\nYour regular expression does not match the input string.")
+	}
 
 }
 
