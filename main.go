@@ -15,11 +15,8 @@ import "fmt"
 
 func main() {
 	//fmt.Println(infixToPostfix("a.b|c*"))
-	//
-	//nfa := regexToNfa(infixToPostfix("a.b|c*"))
-	//fmt.Println(nfa)
 
-	fmt.Println(matches("a.b|c*", "cccc"))
+	fmt.Println(matches("a?.b", "ab"))
 
 }
 
@@ -109,10 +106,10 @@ func regexToNfa(postfix string) *nfa {
 			twoFragments := nfaStack[len(nfaStack)-2:]
 			nfaStack = nfaStack[:len(nfaStack)-2]
 
-			//connect accept state of firstEdge fragment to initial state of secondEdge fragment
+			//connect accept state of first fragment to initial state of second fragment
 			twoFragments[0].accept.firstEdge = twoFragments[1].initial
 
-			//create a new state with the initial state of the firstEdge fragment and the accept state of the secondEdge fragment
+			//create a new state with the initial state of the first fragment and the accept state of the second fragment
 			newNfa := &nfa{initial: twoFragments[0].initial, accept: twoFragments[1].accept}
 
 			//and push it back to the stack
@@ -139,6 +136,32 @@ func regexToNfa(postfix string) *nfa {
 			//push the new fragment back onto the stack
 			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
 
+
+		//	accept zero or one of a character
+		case '?':
+			//pop an element of the stack of nfas
+			frag := nfaStack[len(nfaStack)-1]
+			nfaStack = nfaStack[:len(nfaStack)-1]
+
+			//create new states for new nfa
+			var initial state
+			var accept state
+
+			//connect new state to the old state
+			initial.firstEdge = frag.initial
+			initial.secondEdge = &accept
+
+			//accept only one character, and then move on
+			frag.accept.firstEdge = &accept
+
+			//push the new fragment back onto the stack
+			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
+
+
+		//case '+':
+		//	frag := nfaStack[len(nfaStack)-1]
+		//	nfaStack = nfaStack[:len(nfaStack)-1]
+
 			//	accept any number of on element
 		case '*':
 			//	pop one fragment of the stack
@@ -146,12 +169,9 @@ func regexToNfa(postfix string) *nfa {
 			nfaStack = nfaStack[:len(nfaStack)-1]
 
 			//create a new initial and accept state
-			var initial state
 			var accept state
-
 			//let the new initial state point to the old initial and new accept state
-			initial.firstEdge = frag.initial
-			initial.secondEdge = &accept
+			initial :=  state{firstEdge:frag.initial, secondEdge:&accept}
 
 			//let the old accept state point to the old initial state and the new accept state
 			frag.accept.firstEdge = frag.initial
@@ -174,7 +194,7 @@ func regexToNfa(postfix string) *nfa {
 }
 
 //checks whether an infix regular expression matches an input
-func matches(regex string, original string) bool {
+func matches(regex string, input string) bool {
 	matches := false
 
 	//convert infix regular expression to postfix expression
@@ -188,24 +208,25 @@ func matches(regex string, original string) bool {
 	//keep track of all states that can be reached next
 	var next []*state
 
+	//add all states reachable from the initial state to the list of current states
 	current = addState(current[:], regexNfa.initial, regexNfa.accept)
 
 	//loop the string
-	for _, r := range original {
+	for _, r := range input {
 		//check all states currently in and what next possible states to reach
 		for _, c := range current {
 
 			// if the current states' symbol matches the current character in the input string put it into the list
 			// of next states
 			if c.symbol == r {
-				next = addState(next[:], c, regexNfa.accept)
+				next = addState(next[:], c.firstEdge, regexNfa.accept)
 			}
 		}
 		//swap the current states against the old next states and clear the next state slice
 		current, next = next, []*state{}
 	}
 
-	//after the whole original string has been gone over, check if the nfa is in an accept state
+	//after the whole input string has been gone over, check if the nfa is in an accept state
 	for _, c := range current {
 		if c == regexNfa.accept {
 			matches = true
