@@ -65,7 +65,7 @@ The application works in three steps.
 1. Check if the regular expression matches an input string.
 
 
-##### 3.1 Infix to Postfix
+#### 3.1 Infix to Postfix
 The Thompson algorithm works best with regular expression that are written in postfix notation rather than in infix
 notation. 
 
@@ -82,17 +82,51 @@ This function uses the [Shunting yard algorithm](https://en.wikipedia.org/wiki/S
 This algorithm uses a LIFO-Stack to cache operators and special characters. All non-special characters are appended directly to an 
 output data structure. Opening brackets are written to the stack put not appended to the output later.
 
+A regular expression already in postfix notation is simply returned unchanged.
 
-##### 3.2 Regular Expression to NFA
+#### 3.2 Regular Expression to NFA
 The function _regexToNfa_ converts a regular expression in postfix notation into a Nondeterministic Finite Automaton.
-Th struct 'state' represents a single state in a state machine. Every state has two edges.
+The struct 'state' represents a single state in a state machine. Every state has two edges.
 The struct 'nfa' represents a NFA with a state for input and one as accept state.
 
 The function parses every symbol in the regular expression and creates a single NFA for each symbol.
-The application accepts the following special characters in order of precedence: '.', '+','?', '.', '|'.
+The application accepts the following operators in order of precedence: '*', '+','?', '.', '|'.
+Each operator results in a different NFA. 
 
+The '*' **operator** matches zero or any number of a character. One edge of the accept state points back to the initial 
+state creating a loop, the other points to the accept state. 
 
-##### 3.3 Matching a String
+The **'+' operator** matches one or more of the same character. One outgoing edge of the NFA points back to previous NFA and
+the other edge points to the accept state. The new NFA has the initial state of the previous NFA and the newly 
+created accept state.
+
+The **'?' operator** matches zero or one occurrence of a character. The initial state has two edges, one going to straight
+to the accept state, thus allowing for zero numbers of the character. The other edge is connected to the previous NFA.
+The accept state of the previous NFA points straight to the new accept state. This prevents matching of multiple 
+occurrences of the same character.   
+
+The **'.' operator** concatenates two characters by connecting the accepting state of the first character with the input state of
+the second state. The new NFA gets the initial state of the first characters' NFA and the accepting state of the second
+characters' NFA. 
+
+Teh **'|' operator** allows for matching one of two characters. The initial state of the new NFA points with both
+edges to the initial states of the two possible NFAs. The new accept state connects both accept states from the two 
+possible characters.
+
+After the whole regular expression is parsed all individual NFAs are now connected like a Linked List.
+
+#### 3.3 Matching a String
+The function `matches` is used to check whether a string matches a regular expression. It accepts a regular expression 
+string and an input string. 
+
+The function first calls the _infixToPostfix_ function to convert the regular expression. It then calls the _regexToNfa_
+function to retrieve the NFA used to match the string.
+
+It maintains two lists of states. One list is used to keep track of the states that are currently visited. The other
+list stores the states that can be reached from all current states. 
+
+It iterates over the input string. For each character of the input string it check the states that are currently
+visited. If the symbol of the state matches    
 
 
 ## 4. How to run the application
