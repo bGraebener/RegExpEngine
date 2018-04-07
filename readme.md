@@ -80,7 +80,10 @@ be applied before operators with higher precedence.
 The conversion from infix to postfix regular expressions is done in the _infixToPostfix_ function.
 This function uses the [Shunting yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).  
 This algorithm uses a LIFO-Stack to cache operators and special characters. All non-special characters are appended directly to an 
-output data structure. Opening brackets are written to the stack put not appended to the output later.
+output data structure. 
+
+When a closing bracket is encountered all elements with a lower precedence than the top element
+on the stack are added to the output. The opening brackets are written to the stack but not appended to the output later.
 
 A regular expression already in postfix notation is simply returned unchanged.
 
@@ -94,13 +97,14 @@ The application accepts the following operators in order of precedence: '*', '+'
 Each operator results in a different NFA. 
 
 The '*' **operator** matches zero or any number of a character. One edge of the accept state points back to the initial 
-state creating a loop, the other points to the accept state. 
+state creating a loop accepting any number of the character, the other points to the accept state possibly accepting 
+zero occurrences. 
 
 The **'+' operator** matches one or more of the same character. One outgoing edge of the NFA points back to previous NFA and
 the other edge points to the accept state. The new NFA has the initial state of the previous NFA and the newly 
 created accept state.
 
-The **'?' operator** matches zero or one occurrence of a character. The initial state has two edges, one going to straight
+The **'?' operator** matches zero or one occurrence of a character. The initial state has two edges, one going straight
 to the accept state, thus allowing for zero numbers of the character. The other edge is connected to the previous NFA.
 The accept state of the previous NFA points straight to the new accept state. This prevents matching of multiple 
 occurrences of the same character.   
@@ -126,16 +130,24 @@ It maintains two lists of states. One list is used to keep track of the states t
 list stores the states that can be reached from all current states. 
 
 It iterates over the input string. For each character of the input string it check the states that are currently
-visited. If the symbol of the state matches    
+visited. If the symbol of the state matches the current character in the string all possible next states are added to
+the list of next states. This list then becomes the new current list and the list of next states is cleared.
+
+After the whole input string has been processed, the list of current states is lopped over to check if one of the 
+current states is an accept state. If this is the case, the function returns a true value otherwise a false. 
 
 
 ## 4. How to run the application
 Clone the repository
->> `git clone https://github.com/bGraebener/RegExpEngine.git`
+```git 
+git clone https://github.com/bGraebener/RegExpEngine.git
+```
 
 Run the application
->> `go run main.go`
-
+```go
+go run main.go
+```
+ 
 ## 5. Examples
 regular expression: a.b?.(c|d*)
 
