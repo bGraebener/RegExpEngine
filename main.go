@@ -36,9 +36,9 @@ func main() {
 
 		//call matching function
 		if matches(regex, input) {
-			fmt.Println("\nYour regular expression matches the input string.")
+			fmt.Println("\nThe input string matches the regular expression.")
 		} else {
-			fmt.Println("\nYour regular expression does not match the input string.")
+			fmt.Println("\nThe input string does not match the regular expression.")
 		}
 
 		fmt.Print("\n\tPlease enter a regular expression (type 'quit' to exit program): ")
@@ -53,14 +53,13 @@ func infixToPostfix(original string) string {
 	var x rune
 	//slice to collect output
 	var postFix []rune
+	//make a stack for caching symbols
+	var stack []rune
 
 	//map of special characters and their weight
 	operators := map[rune]int{'*': 10, '+': 9, '?': 8, '.': 7, '|': 6}
 
-	//make a stack
-	var stack []rune
-
-	//convert string to runes
+	//operate on all symbols in the original regular expression
 	for _, r := range original {
 
 		//check for rune type
@@ -70,13 +69,13 @@ func infixToPostfix(original string) string {
 		case r == '(':
 			stack = append(stack, r)
 
-			//add everything from the stack to postfix until you encounter an opening bracket
+			//add everything from the stack to output until you encounter an opening bracket
 		case r == ')':
 			for stack[len(stack)-1] != '(' {
 				stack, x = pop(stack)
 				postFix = append(postFix, x)
 			}
-			//pop the remaining bracket
+			//pop the remaining opening bracket
 			stack, _ = pop(stack)
 
 			//while something is on the stack and the precedence is less than the top element of the stack
@@ -88,6 +87,7 @@ func infixToPostfix(original string) string {
 			}
 			stack = append(stack, r)
 
+		//	no special character, append it to the output
 		default:
 			//add word rune to the postfix slice
 			postFix = append(postFix, r)
