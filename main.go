@@ -16,29 +16,34 @@ import "fmt"
 func main() {
 
 	// show a command line interface
-
 	fmt.Println("**********Welcome to the Regular Expression Matcher***************")
-	fmt.Println("\tYou can enter a regular expression in \n\t\tin-fix notation (e.g a.b or a+.b+)")
-	fmt.Println("\t\tor post-fix notation (e.g. ab. or a+b+.)")
+	fmt.Println("\tYou can enter a regular expression in \n\t\t1)in-fix notation (e.g a.b or a+.b+)")
+	fmt.Println("\t\t2) or post-fix notation (e.g. ab. or a+b+.)")
 	fmt.Println("\t\tsupported special characters are: *, ?, +, ., |")
 
 	//ask for regular expression
-	fmt.Print("\n\tPlease enter a regular expression: ")
+	fmt.Print("\n\tPlease enter a regular expression (type 'quit' to exit program): ")
 	var regex string
 	fmt.Scanln(&regex)
 
-	//ask for string to check
-	fmt.Print("\tPlease enter a string to test against the regular expression: ")
-	var input string
-	fmt.Scanln(&input)
+	//ask for user input until the user enters 'quit'
+	for regex != "quit" {
 
-	//call matching function
-	if matches(regex, input) {
-		fmt.Println("\nYour regular expression matches the input string.")
-	} else {
-		fmt.Println("\nYour regular expression does not match the input string.")
+		//ask for string to check
+		fmt.Print("\tPlease enter a string to test against the regular expression: ")
+		var input string
+		fmt.Scanln(&input)
+
+		//call matching function
+		if matches(regex, input) {
+			fmt.Println("\nYour regular expression matches the input string.")
+		} else {
+			fmt.Println("\nYour regular expression does not match the input string.")
+		}
+
+		fmt.Print("\n\tPlease enter a regular expression (type 'quit' to exit program): ")
+		fmt.Scanln(&regex)
 	}
-
 }
 
 //converts an infix regular expression to a postfix one
@@ -157,7 +162,7 @@ func regexToNfa(postfix string) *nfa {
 			//push the new fragment back onto the stack
 			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
 
-		//	accept zero or one of a character
+			//	accept zero or one of a character
 		case '?':
 			//pop an element of the stack of nfas
 			frag := nfaStack[len(nfaStack)-1]
@@ -177,7 +182,7 @@ func regexToNfa(postfix string) *nfa {
 			//push the new fragment back onto the stack
 			nfaStack = append(nfaStack, &nfa{initial: &initial, accept: &accept})
 
-		//	accept one or more of a character
+			//	accept one or more of a character
 		case '+':
 			//pop an element of the stack of nfas
 			frag := nfaStack[len(nfaStack)-1]
