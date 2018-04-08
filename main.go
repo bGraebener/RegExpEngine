@@ -36,9 +36,9 @@ func main() {
 
 		//call matching function
 		if matches(regex, input) {
-			fmt.Println("\nThe input string matches the regular expression.")
+			fmt.Println("\n\tThe input string matches the regular expression.")
 		} else {
-			fmt.Println("\nThe input string does not match the regular expression.")
+			fmt.Println("\n\tThe input string does not match the regular expression.")
 		}
 
 		fmt.Print("\n\tPlease enter a regular expression (type 'quit' to exit program): ")

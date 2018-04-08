@@ -64,7 +64,7 @@ The Thompson construction works best with regular expression that are written in
 notation. 
 
 >>Example for infix notation: a.b.c -> The operators are between the the operands.\
->>Postfix notation: ab.c. Here the operators come after the two operands. 
+>>Postfix notation: ab.c. -> Here the operators come after the two operands. 
 
 The advantage of the postfix notation is that brackets can be omitted if operators with lower precedence need to 
 be applied before operators with higher precedence.
@@ -136,7 +136,7 @@ Clone the repository
 git clone https://github.com/bGraebener/RegExpEngine.git
 ```
 ```
-cd %GOPATH%/regexpengine
+cd regexpengine
 ```
 Run the application
 ```go
