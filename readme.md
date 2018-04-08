@@ -1,4 +1,4 @@
-# Regular Expression Engine using the Thompson
+# Regular Expression Engine using the Thompson Construction
 
 >Author: Bastian Graebener\
 >Student-ID: G00340600\
@@ -11,9 +11,9 @@
 ## 1. Introduction
 This program is a programming excersise for the module 'Graph Theory' in a 3rd year Software Development Course.
 
-The task was to write a simple regular expression matching application that is based on Ken Thompsons' algorithm.
+The task was to write a simple regular expression matching application that is based on Ken Thompsons' construction.
 
-Thompsons' algorithm is used to convert a regular expression [[1](https://en.wikipedia.org/wiki/Regular_expression), 
+Thompsons' construction is used to convert a regular expression [[1](https://en.wikipedia.org/wiki/Regular_expression), 
     [2](https://www.regular-expressions.info)] to a 
 Nondeterministic Finite Automaton(NFA) [[1](https://people.cs.clemson.edu/~goddard/texts/theoryOfComputation/3a.pdf), 
     [2](https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton)].
@@ -25,7 +25,7 @@ and no regular expression libraries were to be used.
 
 
 
-## 2. Elements of the Application\
+## 2. Elements of the Application
 ### 2.1 Nondeterministic Finite Automaton (NFA)
 A NFA is a state machine which is defined by 5 tuples. A finite set of states, a finite set of
 input strings, a transition function, one initial state and a set of accepting states.
@@ -40,8 +40,8 @@ For example, the three characters ".", "|", and "∗" have the special meanings 
 star" respectively. So, 0.1 means a 0 followed by a 1, 0|1 means a 0 or a 1,
 and 1∗ means any number of 1’s. 
 
-### 2.3 Thompsons' Algorithm 
-Thompsons Algorithm is an algorithm developed by Ken Thompson in 1968.
+### 2.3 Thompsons' Construction 
+Thompsons construction is an algorithm developed by Ken Thompson in 1968.
 
 The algorithm splits a regular expression into its smallest sub-expression. For every sub-expression a NFA is created. 
 All those NFA are then put together into a single NFA which can be used to match a string.
@@ -55,15 +55,15 @@ An in depth explanation of the algorithm can be found [here](https://en.wikipedi
 The application works in three steps.
 
 1. Rewrite the regular expression from infix notation to postfix notation using the shunting yard algorithm.
-1. Create NFAs for every sub fragment in the regular expression and assemble them to a single NFA (Thompsons' Algorithm).  
+1. Create NFAs for every sub fragment in the regular expression and assemble them to a single NFA (Thompsons' construction).  
 1. Check if the regular expression matches an input string.
 
 
 #### 3.1 Infix to Postfix
-The Thompson algorithm works best with regular expression that are written in postfix notation rather than in infix
+The Thompson construction works best with regular expression that are written in postfix notation rather than in infix
 notation. 
 
->>Example for infix notation: a.b.c The operators are between the the operands.\
+>>Example for infix notation: a.b.c -> The operators are between the the operands.\
 >>Postfix notation: ab.c. Here the operators come after the two operands. 
 
 The advantage of the postfix notation is that brackets can be omitted if operators with lower precedence need to 
@@ -173,7 +173,7 @@ https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton
 https://en.wikipedia.org/wiki/Regular_expression\
 https://www.regular-expressions.info
 
-#### 6.3 Thompsons' Algorithm
+#### 6.3 Thompsons' Construction
 https://swtch.com/~rsc/regexp/regexp1.html 
 
 #### 6.4 Shunting Yard
